@@ -696,14 +696,14 @@ u64 GpuSplit::PendingWriteTarget(const void* space, GPUVAddr address, u64 size, 
     if (last_page - first_page >= 64) {
         return (std::max)(target, last_record);
     }
-    const bool small = size <= 256;
+    const bool is_small_read = size <= 256;
     for (GPUVAddr page = first_page; page <= last_page; ++page) {
         const PageSlot* const slot = FindPage((page << 2) | sid);
         if (slot == nullptr || slot->any <= (std::max)(target, consumed_cache)) {
             // No pending write in the page (a pending slot that gave way raised the floor).
             continue;
         }
-        if (!small) {
+        if (!is_small_read) {
             target = slot->any;
             continue;
         }
